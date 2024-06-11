@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+
+
+<head>
+    <style>
+        #user.selected{
+            border: 3px solid black;
+            border-radius: 10px;
+        }
+    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="bootstrap.min.css">
+    <link rel="stylesheet" href="all.min.css">
+</head>
+
+<body style="background-image: linear-gradient(rgb(66, 147, 253) , rgb(50, 139, 255));" class=" row container">
+    <div class="list-group list-group-flush border-bottom scrollarea col-6 pt-3" id="users">
+    </div>
+    <div class=" col-6 p-5" id="POSTS">
+    </div>
+    <script src="bootstrap.bundle.min.js"></script>
+</body>
+<script>
+    function get_posts(useridpar) {
+        const xhttp_request = new XMLHttpRequest();
+        xhttp_request.open("GET", `https://jsonplaceholder.typicode.com/posts?userId=${useridpar}`);
+        xhttp_request.responseType="json"
+        xhttp_request.send();
+        xhttp_request.onload = function () {
+            if (xhttp_request.status >= 200 && xhttp_request.status < 300) {
+                let res= xhttp_request.response;
+                document.getElementById('POSTS').innerHTML='';
+                for (post of res ){
+                    let content =` 
+                    <div class=" alert alert-light">${post.title}</div>
+                    `
+                    document.getElementById('POSTS').innerHTML +=content;
+                }
+            } else {
+                console.log("error")
+            }
+        }
+    }
+
+
+    function user_click(id,sel){
+        get_posts(id);
+        let sel_el = document.getElementsByClassName("selected")
+        for(ele of sel_el ){
+            ele.classList.remove('selected');
+        }
+        sel.classList.add("selected")
+
+    }
+    function get_users() {
+        const xhttp_request = new XMLHttpRequest();
+        xhttp_request.open("GET", 'https://jsonplaceholder.typicode.com/users');
+        xhttp_request.responseType="json"
+        xhttp_request.send();
+        xhttp_request.onload = function () {
+            if (xhttp_request.status >= 200 && xhttp_request.status < 300) {
+                let res= xhttp_request.response;
+                document.getElementById('users').innerHTML='';
+                for (post of res ){
+                    let content =` 
+                    <a href="#" id="user" onclick="user_click(${post.id},this)" class="list-group-item list-group-item-action py-3 lh-sm mt-2">
+                        <div class="d-flex w-100 align-items-center justify-content-between">
+                            <strong class="mb-1">${post.name}</strong>
+                        </div>
+                        <div class="col-10 mb-1 small">${post.email}</div>
+                    </a>
+                    `
+                    document.getElementById('users').innerHTML +=content;
+                }
+            } else {
+                console.log("error")
+            }
+        }
+    }
+    get_users();
+</script>
+
+</html>
